@@ -1,10 +1,5 @@
-# scratch-gui
-
-Scratch GUI is a set of React components that comprise the interface for creating and running Scratch 3.0 projects
-
-To open the current build in your browser on Github Pages:
-
-https://scratchfoundation.github.io/scratch-gui/
+# `bci-buddy-gpi`
+>  The web-based graphical programming interface for BCI Buddy
 
 ## Installation
 
@@ -13,19 +8,16 @@ This requires you to have Git and Node.js installed.
 In your own node environment/application:
 
 ```bash
-npm install https://github.com/scratchfoundation/scratch-gui.git
+npm install https://github.com/BCI-Buddy/bci-buddy-gpi.git
 ```
 
 If you want to edit/play yourself:
 
 ```bash
-git clone https://github.com/scratchfoundation/scratch-gui.git
-cd scratch-gui
+git clone https://github.com/BCI-Buddy/bci-buddy-gpi.git
+cd bci-buddy-gpi
 npm install
 ```
-
-**You may want to add `--depth=1` to the `git clone` command because there are some [large files in the git repository
-history](https://github.com/scratchfoundation/scratch-gui/issues/5140).**
 
 ## Getting started
 
@@ -41,47 +33,6 @@ npm start
 
 Then go to [http://localhost:8601/](http://localhost:8601/) - the playground outputs the default GUI component
 
-## Developing alongside other Scratch repositories
-
-### Getting another repo to point to this code
-
-
-If you wish to develop `scratch-gui` alongside other scratch repositories that depend on it, you may wish
-to have the other repositories use your local `scratch-gui` build instead of fetching the current production
-version of the scratch-gui that is found by default using `npm install`.
-
-Here's how to link your local `scratch-gui` code to another project's `node_modules/scratch-gui`.
-
-#### Configuration
-
-1. In your local `scratch-gui` repository's top level:
-    1. Make sure you have run `npm install`
-    2. Build the `dist` directory by running `BUILD_MODE=dist npm run build`
-    3. Establish a link to this repository by running `npm link`
-
-2. From the top level of each repository (such as `scratch-www`) that depends on `scratch-gui`:
-    1. Make sure you have run `npm install`
-    2. Run `npm link scratch-gui`
-    3. Build or run the repository
-
-#### Using `npm run watch`
-
-Instead of `BUILD_MODE=dist npm run build`, you can use `BUILD_MODE=dist npm run watch` instead. This will watch for
-changes to your `scratch-gui` code, and automatically rebuild when there are changes. Sometimes this has been
-unreliable; if you are having problems, try going back to `BUILD_MODE=dist npm run build` until you resolve them.
-
-#### Oh no! It didn't work!
-
-If you can't get linking to work right, try:
-
-* Follow the recipe above step by step and don't change the order. It is especially important to run `npm install`
-  _before_ `npm link` as installing after the linking will reset the linking.
-* Make sure the repositories are siblings on your machine's file tree, like
-  `.../.../MY_SCRATCH_DEV_DIRECTORY/scratch-gui/` and `.../.../MY_SCRATCH_DEV_DIRECTORY/scratch-www/`.
-* Consistent node.js version: If you have multiple Terminal tabs or windows open for the different Scratch
-  repositories, make sure to use the same node version in all of them.
-* If nothing else works, unlink the repositories by running `npm unlink` in both, and start over.
-
 ## Testing
 
 ### Documentation
@@ -95,7 +46,7 @@ See [jest cli docs](https://facebook.github.io/jest/docs/en/cli.html#content) fo
 
 *NOTE: If you're a Windows user, please run these scripts in Windows `cmd.exe`  instead of Git Bash/MINGW64.*
 
-Before running any tests, make sure you have run `npm install` from this (scratch-gui) repository's top level.
+Before running any tests, make sure you have run `npm install` from this (bci-buddy-gpi) repository's top level.
 
 #### Main testing command
 
@@ -201,8 +152,8 @@ npm install  --no-optional --save-dev react-intl-redux@^0.7
 The dependency itself might have more missing dependencies, which will show up like this:
 
 ```bash
-user@machine:~/sources/scratch/scratch-gui (491-translatable-library-objects)$ npm install  --no-optional --save-dev react-intl-redux@^0.7
-scratch-gui@0.1.0 /media/cuideigin/Linux/sources/scratch/scratch-gui
+user@machine:~/sources/scratch/bci-buddy-gpi (491-translatable-library-objects)$ npm install  --no-optional --save-dev react-intl-redux@^0.7
+bci-buddy-gpi@0.1.0 /media/cuideigin/Linux/sources/scratch/bci-buddy-gpi
 ├── react-intl-redux@0.7.0
 └── UNMET PEER DEPENDENCY react-responsive@5.0.0
 ```
@@ -224,14 +175,9 @@ If you run into npm install errors, try these steps:
 3. Delete package-lock.json
 4. run `npm install` again
 
-## Publishing to GitHub Pages
-
-You can publish the GUI to github.io so that others on the Internet can view it.
-[Read the wiki for a step-by-step guide.](https://github.com/scratchfoundation/scratch-gui/wiki/Publishing-to-GitHub-Pages)
-
 ## Understanding the project state machine
 
-Since so much code throughout scratch-gui depends on the state of the project, which goes through many different
+Since so much code throughout bci-buddy-gpi depends on the state of the project, which goes through many different
 phases of loading, displaying and saving, we created a "finite state machine" to make it clear which state it is in at
 any moment. This is contained in the file src/reducers/project-state.js .
 
@@ -292,9 +238,3 @@ Here's what will happen in the project state machine:
 6. When loading is done, src/lib/vm-manager-hoc.jsx dispatches the `DONE_LOADING_VM_WITH_ID` action. This transitions
    the state from `LOADING_VM_WITH_ID` to `SHOWING_WITH_ID`.
 7. The `SHOWING_WITH_ID` state. Now the project appears normally and is playable and editable.
-
-## Donate
-
-We provide [Scratch](https://scratch.mit.edu) free of charge, and want to keep it that way! Please consider making a
-[donation](https://www.scratchfoundation.org/donate) to support our continued engineering, design, community, and
-resource development efforts. Donations of any size are appreciated. Thank you!
