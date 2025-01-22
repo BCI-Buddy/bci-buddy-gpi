@@ -70,10 +70,10 @@ To run unit tests in watch mode (watches for code changes and continuously runs 
 npm run test:unit -- --watch
 ```
 
-You can run a single file of integration tests (in this example, the `button` tests):
+You can run a single file of integration tests (in this example, the `bcib-api` tests):
 
 ```bash
-$(npm bin)/jest --runInBand test/unit/components/button.test.jsx
+npx jest --runInBand test/integration/api/bcib-api.test.js
 ```
 
 #### Running integration tests
