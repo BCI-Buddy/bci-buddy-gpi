@@ -1,19 +1,24 @@
 import net from 'net';
 
+
 class BciBuddyClient {
     constructor(socketUrl) {
-        const [host, port] = socketUrl.replace('tcp://', '').split(':');
+        this.socketUrl = socketUrl;
         this.socket = new net.Socket();
+        this.communicationSocket = null;
+    }
+
+    async initialize() {
+        const [host, port] = this.socketUrl.replace('tcp://', '').split(':');
         this.host = host;
         this.port = parseInt(port, 10);
-        this.communicationSocket = null;
 
         this.socket.on('connect', () => {
-            console.log('TCP connection established');
+            // console.log('TCP connection established');
         });
 
         this.socket.on('data', (data) => {
-            console.log('Received message:', data.toString());
+            // console.log('Received message:', data.toString());
             this.handleInitializationResponse(data.toString());
         });
 
@@ -22,8 +27,10 @@ class BciBuddyClient {
         });
 
         this.socket.on('close', () => {
-            console.log('TCP connection closed');
+            // console.log('TCP connection closed');
         });
+
+        await this.connect();
     }
 
     connect() {
@@ -42,13 +49,16 @@ class BciBuddyClient {
         const parsedData = JSON.parse(data);
         if (parsedData.type === 'OK' && parsedData.payload && parsedData.payload.endpoint) {
             const [host, port] = parsedData.payload.endpoint.replace('tcp://', '').split(':');
+            this.socket.destroy(); // Close the initial socket
             this.communicationSocket = new net.Socket();
             this.communicationSocket.connect(parseInt(port, 10), host, () => {
-                console.log('Connected to communication endpoint');
+                // console.log('Connected to communication endpoint');
+                this.communicationSocketReady = true;
             });
 
             this.communicationSocket.on('data', (data) => {
-                console.log('Received message from communication endpoint:', data.toString());
+                // console.log('Received message from communication endpoint:', data.toString());
+                this.communicationSocketResponse = data.toString();
             });
 
             this.communicationSocket.on('error', (error) => {
@@ -56,17 +66,29 @@ class BciBuddyClient {
             });
 
             this.communicationSocket.on('close', () => {
-                console.log('TCP communication socket closed');
+                // console.log('TCP communication socket closed');
             });
         } else {
             console.error('Invalid initialization response');
         }
     }
 
-    sendRequest(request) {
+    async sendRequest(request) {
+        if (!this.communicationSocketReady) {
+            await new Promise((resolve) => {
+                const checkSocketReady = setInterval(() => {
+                    if (this.communicationSocketReady) {
+                        clearInterval(checkSocketReady);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+
         return new Promise((resolve, reject) => {
-            if (this.communicationSocket && this.communicationSocket.readyState === 'open') {
-                this.communicationSocket.write(request.serialize());
+            if (this.communicationSocket.readyState === 'open') {
+                const serializedRequest = request.serialize();
+                this.communicationSocket.write(serializedRequest);
 
                 this.communicationSocket.on('data', (data) => {
                     resolve(JSON.parse(data.toString()));
@@ -76,9 +98,11 @@ class BciBuddyClient {
                     reject(error);
                 });
             } else {
-                reject(new Error('TCP communication socket is not open'));
+                reject(new Error('TCP socket is not open'));
             }
         });
     }
 }
+
+
 export default BciBuddyClient;
