@@ -19,7 +19,7 @@ class Request {
         if (!Object.values(RequestType).includes(request_type)) {
             throw new Error('Invalid request type');
         }
-        this.request_type = request_type;
+        this.type = request_type;
         this.payload = payload || {};
     }
 
@@ -47,7 +47,7 @@ class Request {
 
     serialize() {
         return Buffer.from(JSON.stringify({
-            type: this.request_type,
+            type: this.type,
             payload: this.payload
         }) + EOT);
     }
@@ -62,7 +62,7 @@ class Response {
         if (!Object.values(ResponseType).includes(response_type)) {
             throw new Error('Invalid response type');
         }
-        this.response_type = response_type;
+        this.type = response_type;
         this.payload = payload || {};
     }
 

@@ -1,4 +1,6 @@
 import net from 'net';
+import mesage from './message';
+const { Response } = mesage;
 
 
 class BciBuddyClient {
@@ -52,12 +54,10 @@ class BciBuddyClient {
             this.socket.destroy(); // Close the initial socket
             this.communicationSocket = new net.Socket();
             this.communicationSocket.connect(parseInt(port, 10), host, () => {
-                // console.log('Connected to communication endpoint');
                 this.communicationSocketReady = true;
             });
 
             this.communicationSocket.on('data', (data) => {
-                // console.log('Received message from communication endpoint:', data.toString());
                 this.communicationSocketResponse = data.toString();
             });
 
@@ -65,9 +65,7 @@ class BciBuddyClient {
                 console.error('TCP error on communication socket:', error);
             });
 
-            this.communicationSocket.on('close', () => {
-                // console.log('TCP communication socket closed');
-            });
+            this.communicationSocket.on('close', () => { });
         } else {
             console.error('Invalid initialization response');
         }
@@ -91,7 +89,8 @@ class BciBuddyClient {
                 this.communicationSocket.write(serializedRequest);
 
                 this.communicationSocket.on('data', (data) => {
-                    resolve(JSON.parse(data.toString()));
+                    const response = Response.deserialize(data);
+                    resolve(response);
                 });
 
                 this.communicationSocket.on('error', (error) => {
