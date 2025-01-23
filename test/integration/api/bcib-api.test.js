@@ -13,6 +13,8 @@ describe('BciBuddyClient TCP socket integration', () => {
     test('should send a ping request and get a pong response', async () => {
         const request = new Request(RequestType.PING);
         const response = await client.sendRequest(request);
+        client.disconnect();
+
         expect(response.type).toEqual(ResponseType.PONG);
         expect(response.payload).toEqual({});
     });
@@ -20,6 +22,8 @@ describe('BciBuddyClient TCP socket integration', () => {
     test('should send an empty pipe request and get error response', async () => {
         const request = new Request(RequestType.PIPE, {});
         const response = await client.sendRequest(request);
+        client.disconnect();
+
         expect(response.type).toEqual(ResponseType.ERROR);
         expect(response.payload["message"]).toEqual("Error while creating pipe: KeyError(operation)");
     });
@@ -37,8 +41,19 @@ describe('BciBuddyClient TCP socket integration', () => {
             "args": pipe_args
         });
         const response = await client.sendRequest(request);
+        client.disconnect();
+
         expect(response.type).toEqual(ResponseType.OK);
         expect(response.payload["port"]).toBeGreaterThanOrEqual(40000);
         expect(response.payload["message"]).toEqual(`Pipe ${pipe_name} created`);
+    });
+
+    test('should send a valid control request and get ok response', async () => {
+        const control_op_code = "start";
+        const request = new Request(RequestType.CONTROL, { "operation": control_op_code });
+        const response = await client.sendRequest(request);
+        client.disconnect();
+
+        expect(response.type).toEqual(ResponseType.OK);
     });
 });

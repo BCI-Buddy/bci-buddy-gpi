@@ -47,6 +47,23 @@ class BciBuddyClient {
         });
     }
 
+    disconnect() {
+        if (this.socket) {
+            this.socket.end();
+            this.socket.destroy();
+            this.socket = null;
+        }
+        if (this.communicationSocket) {
+            this.communicationSocket.end();
+            this.communicationSocket.destroy();
+            this.communicationSocket = null;
+        }
+        this.communicationSocketReady = false;
+        this.communicationSocketResponse = null;
+        this.host = null;
+        this.port = null;
+    }
+
     handleInitializationResponse(data) {
         const parsedData = JSON.parse(data);
         if (parsedData.type === 'OK' && parsedData.payload && parsedData.payload.endpoint) {
